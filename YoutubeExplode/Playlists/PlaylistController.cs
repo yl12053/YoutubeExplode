@@ -2,6 +2,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using YoutubeExplode.Bridge;
 using YoutubeExplode.Exceptions;
 using YoutubeExplode.Utils;
@@ -12,7 +13,7 @@ namespace YoutubeExplode.Playlists;
 internal class PlaylistController(HttpClient http)
 {
     // Works only with user-made playlists
-    public async ValueTask<PlaylistBrowseResponse> GetPlaylistBrowseResponseAsync(
+    public async UniTask<PlaylistBrowseResponse> GetPlaylistBrowseResponseAsync(
         PlaylistId playlistId,
         CancellationToken cancellationToken = default
     )
@@ -54,7 +55,7 @@ internal class PlaylistController(HttpClient http)
     }
 
     // Works on all playlists, but contains limited metadata
-    public async ValueTask<PlaylistNextResponse> GetPlaylistNextResponseAsync(
+    public async UniTask<PlaylistNextResponse> GetPlaylistNextResponseAsync(
         PlaylistId playlistId,
         VideoId? videoId = null,
         int index = 0,
@@ -143,7 +144,7 @@ internal class PlaylistController(HttpClient http)
         }
     }
 
-    public async ValueTask<IPlaylistData> GetPlaylistResponseAsync(
+    public async UniTask<IPlaylistData> GetPlaylistResponseAsync(
         PlaylistId playlistId,
         CancellationToken cancellationToken = default
     )

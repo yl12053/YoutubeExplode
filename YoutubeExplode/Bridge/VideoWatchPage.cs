@@ -1,12 +1,11 @@
 using System;
 using System.Globalization;
 using System.Linq;
-using System.Text.Json;
 using System.Text.RegularExpressions;
 using AngleSharp.Dom;
 using AngleSharp.Html.Dom;
-using JsonExtensions.Reading;
 using Lazy;
+using Newtonsoft.Json.Linq;
 using PowerKit.Extensions;
 using YoutubeExplode.Utils;
 using YoutubeExplode.Utils.Extensions;
@@ -87,7 +86,7 @@ internal partial class VideoWatchPage(IHtmlDocument content)
             .Pipe(s => long.ParseOrNull(s, CultureInfo.InvariantCulture));
 
     [Lazy]
-    private JsonElement? PlayerConfig =>
+    private JToken? PlayerConfig =>
         content
             .GetElementsByTagName("script")
             .Select(e => e.Text())

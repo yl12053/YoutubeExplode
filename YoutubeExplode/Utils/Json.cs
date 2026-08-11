@@ -1,7 +1,7 @@
 using System.Globalization;
-using System.Linq;
 using System.Text;
-using System.Text.Json;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace YoutubeExplode.Utils;
 
@@ -40,13 +40,12 @@ internal static class Json
         return buffer.ToString();
     }
 
-    public static JsonElement Parse(string source)
+    public static JToken Parse(string source)
     {
-        using var document = JsonDocument.Parse(source);
-        return document.RootElement.Clone();
+        return JToken.Parse(source);
     }
 
-    public static JsonElement? TryParse(string source)
+    public static JToken? TryParse(string source)
     {
         try
         {

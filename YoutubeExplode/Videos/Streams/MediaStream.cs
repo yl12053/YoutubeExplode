@@ -4,6 +4,7 @@ using System.IO;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using YoutubeExplode.Utils;
 
 namespace YoutubeExplode.Videos.Streams;
@@ -43,7 +44,7 @@ internal partial class MediaStream(HttpClient http, IStreamInfo streamInfo) : St
         _segmentStream = null;
     }
 
-    private async ValueTask<Stream> ResolveSegmentAsync(
+    private async UniTask<Stream> ResolveSegmentAsync(
         CancellationToken cancellationToken = default
     )
     {
@@ -56,10 +57,10 @@ internal partial class MediaStream(HttpClient http, IStreamInfo streamInfo) : St
         return _segmentStream = stream;
     }
 
-    public async ValueTask InitializeAsync(CancellationToken cancellationToken = default) =>
+    public async Task InitializeAsync(CancellationToken cancellationToken = default) =>
         await ResolveSegmentAsync(cancellationToken);
 
-    private async ValueTask<int> ReadSegmentAsync(
+    private async UniTask<int> ReadSegmentAsync(
         byte[] buffer,
         int offset,
         int count,
@@ -82,7 +83,7 @@ internal partial class MediaStream(HttpClient http, IStreamInfo streamInfo) : St
         }
     }
 
-    public override async Task<int> ReadAsync(
+    public async UniTask<int> ReadAsyncUni(
         byte[] buffer,
         int offset,
         int count,
@@ -111,6 +112,16 @@ internal partial class MediaStream(HttpClient http, IStreamInfo streamInfo) : St
             // Reached the end of the segment, load the next one and loop around
             ResetSegment();
         }
+    }
+
+    public override Task<int> ReadAsync(
+        byte[] buffer,
+        int offset,
+        int count,
+        CancellationToken cancellationToken
+    )
+    {
+        return ReadAsyncUni(buffer, offset, count, cancellationToken).AsTask();
     }
 
     [ExcludeFromCodeCoverage]

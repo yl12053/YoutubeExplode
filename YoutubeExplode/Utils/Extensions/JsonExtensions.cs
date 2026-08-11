@@ -1,36 +1,42 @@
 using System.Collections.Generic;
-using System.Linq;
-using System.Text.Json;
-using JsonExtensions.Reading;
+using Newtonsoft.Json.Linq;
 
 namespace YoutubeExplode.Utils.Extensions;
 
 internal static class JsonExtensions
 {
-    extension(JsonElement element)
+    extension(JToken token)
     {
-        public IEnumerable<JsonElement> EnumerateDescendantProperties(string propertyName)
+        public IEnumerable<JToken> EnumerateDescendantProperties(string propertyName)
         {
-            // Check if this property exists on the current object
-            var property = element.GetPropertyOrNull(propertyName);
-            if (property is not null)
-                yield return property.Value;
+            if (token is JObject obj)
+            {
+                var property = obj[propertyName];
+                if (property is not null)
+                {
+                    yield return property;
+                }
 
-            // Recursively check on all array children (if current element is an array)
-            var deepArrayDescendants = element
-                .EnumerateArrayOrEmpty()
-                .SelectMany(j => j.EnumerateDescendantProperties(propertyName));
-
-            foreach (var deepDescendant in deepArrayDescendants)
-                yield return deepDescendant;
-
-            // Recursively check on all object children (if current element is an object)
-            var deepObjectDescendants = element
-                .EnumerateObjectOrEmpty()
-                .SelectMany(j => j.Value.EnumerateDescendantProperties(propertyName));
-
-            foreach (var deepDescendant in deepObjectDescendants)
-                yield return deepDescendant;
+                foreach (var child in obj.Values())
+                {
+                    foreach (
+                        var deepDescendant in child.EnumerateDescendantProperties(propertyName)
+                    )
+                    {
+                        yield return deepDescendant;
+                    }
+                }
+            }
+            else if (token is JArray arr)
+            {
+                foreach (var item in arr)
+                {
+                    foreach (var deepDescendant in item.EnumerateDescendantProperties(propertyName))
+                    {
+                        yield return deepDescendant;
+                    }
+                }
+            }
         }
     }
 }

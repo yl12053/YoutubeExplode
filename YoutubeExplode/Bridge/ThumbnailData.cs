@@ -1,10 +1,9 @@
-using System.Text.Json;
-using JsonExtensions.Reading;
 using Lazy;
+using Newtonsoft.Json.Linq;
 
 namespace YoutubeExplode.Bridge;
 
-internal class ThumbnailData(JsonElement content)
+internal class ThumbnailData(JToken content)
 {
     [Lazy]
     public string? Url => content.GetPropertyOrNull("url")?.GetStringOrNull();

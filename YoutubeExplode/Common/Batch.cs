@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using PowerKit.Extensions;
 
 namespace YoutubeExplode.Common;
@@ -23,9 +24,9 @@ internal static class Batch
 
 internal static class BatchExtensions
 {
-    extension<T>(IAsyncEnumerable<Batch<T>> source)
+    extension<T>(IUniTaskAsyncEnumerable<Batch<T>> source)
         where T : IBatchItem
     {
-        public IAsyncEnumerable<T> FlattenAsync() => source.SelectManyAsync(b => b.Items);
+        public IUniTaskAsyncEnumerable<T> FlattenAsync() => source.SelectManyAsync(b => b.Items);
     }
 }

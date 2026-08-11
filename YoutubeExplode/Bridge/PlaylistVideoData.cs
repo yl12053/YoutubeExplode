@@ -2,14 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Text.Json;
-using JsonExtensions.Reading;
 using Lazy;
+using Newtonsoft.Json.Linq;
 using PowerKit.Extensions;
 
 namespace YoutubeExplode.Bridge;
 
-internal class PlaylistVideoData(JsonElement content)
+internal class PlaylistVideoData(JToken content)
 {
     [Lazy]
     public int? Index =>
@@ -34,7 +33,7 @@ internal class PlaylistVideoData(JsonElement content)
             .Pipe(string.Concat);
 
     [Lazy]
-    private JsonElement? AuthorDetails =>
+    private JToken? AuthorDetails =>
         content
             .GetPropertyOrNull("longBylineText")
             ?.GetPropertyOrNull("runs")

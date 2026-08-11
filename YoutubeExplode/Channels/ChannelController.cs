@@ -1,6 +1,7 @@
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using YoutubeExplode.Bridge;
 using YoutubeExplode.Exceptions;
 
@@ -8,7 +9,7 @@ namespace YoutubeExplode.Channels;
 
 internal class ChannelController(HttpClient http)
 {
-    private async ValueTask<ChannelPage> GetChannelPageAsync(
+    private async UniTask<ChannelPage> GetChannelPageAsync(
         string channelRoute,
         CancellationToken cancellationToken = default
     )
@@ -36,22 +37,22 @@ internal class ChannelController(HttpClient http)
         }
     }
 
-    public async ValueTask<ChannelPage> GetChannelPageAsync(
+    public async UniTask<ChannelPage> GetChannelPageAsync(
         ChannelId channelId,
         CancellationToken cancellationToken = default
     ) => await GetChannelPageAsync("channel/" + channelId, cancellationToken);
 
-    public async ValueTask<ChannelPage> GetChannelPageAsync(
+    public async UniTask<ChannelPage> GetChannelPageAsync(
         UserName userName,
         CancellationToken cancellationToken = default
     ) => await GetChannelPageAsync("user/" + userName, cancellationToken);
 
-    public async ValueTask<ChannelPage> GetChannelPageAsync(
+    public async UniTask<ChannelPage> GetChannelPageAsync(
         ChannelSlug channelSlug,
         CancellationToken cancellationToken = default
     ) => await GetChannelPageAsync("c/" + channelSlug, cancellationToken);
 
-    public async ValueTask<ChannelPage> GetChannelPageAsync(
+    public async UniTask<ChannelPage> GetChannelPageAsync(
         ChannelHandle channelHandle,
         CancellationToken cancellationToken = default
     ) => await GetChannelPageAsync("@" + channelHandle, cancellationToken);

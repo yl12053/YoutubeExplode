@@ -2,22 +2,22 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Text.Json;
 using JsonExtensions.Reading;
 using Lazy;
+using Newtonsoft.Json.Linq;
 using PowerKit.Extensions;
 using YoutubeExplode.Utils;
 using YoutubeExplode.Utils.Extensions;
 
 namespace YoutubeExplode.Bridge;
 
-internal partial class SearchResponse(JsonElement content)
+internal partial class SearchResponse(JToken content)
 {
     // Search response is incredibly inconsistent (with at least 5 variations),
     // so we employ descendant searching, which is inefficient but resilient.
 
     [Lazy]
-    private JsonElement? ContentRoot =>
+    private JToken? ContentRoot =>
         content.GetPropertyOrNull("contents")
         ?? content.GetPropertyOrNull("onResponseReceivedCommands");
 
@@ -60,7 +60,7 @@ internal partial class SearchResponse(JsonElement content)
 
 internal partial class SearchResponse
 {
-    internal class VideoData(JsonElement content)
+    internal class VideoData(JToken content)
     {
         [Lazy]
         public string? Id => content.GetPropertyOrNull("videoId")?.GetStringOrNull();
@@ -77,7 +77,7 @@ internal partial class SearchResponse
                 .Pipe(string.Concat);
 
         [Lazy]
-        private JsonElement? AuthorDetails =>
+        private JToken? AuthorDetails =>
             content
                 .GetPropertyOrNull("longBylineText")
                 ?.GetPropertyOrNull("runs")
@@ -155,7 +155,7 @@ internal partial class SearchResponse
 
 internal partial class SearchResponse
 {
-    public class PlaylistData(JsonElement content)
+    public class PlaylistData(JToken content)
     {
         [Lazy]
         public string? Id =>
@@ -163,7 +163,7 @@ internal partial class SearchResponse
             ?? content.GetPropertyOrNull("playlistId")?.GetStringOrNull();
 
         [Lazy]
-        private JsonElement? Metadata =>
+        private JToken? Metadata =>
             content.GetPropertyOrNull("metadata")?.GetPropertyOrNull("lockupMetadataViewModel");
 
         [Lazy]
@@ -182,7 +182,7 @@ internal partial class SearchResponse
                 .Pipe(string.Concat);
 
         [Lazy]
-        private JsonElement? AuthorDetails =>
+        private JToken? AuthorDetails =>
             Metadata
                 ?.EnumerateDescendantProperties("metadataParts")
                 ?.ElementAtOrNull(0)
@@ -241,7 +241,7 @@ internal partial class SearchResponse
 
 internal partial class SearchResponse
 {
-    public class ChannelData(JsonElement content)
+    public class ChannelData(JToken content)
     {
         [Lazy]
         public string? Id => content.GetPropertyOrNull("channelId")?.GetStringOrNull();

@@ -7,6 +7,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using PowerKit;
 using PowerKit.Extensions;
 using YoutubeExplode.Exceptions;
@@ -64,9 +65,12 @@ internal class YoutubeHttpHandler : ClientDelegatingHandler
 
         var timestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
         var token = $"{timestamp} {sessionId} {uri.Domain}";
-        var tokenHash = Convert.ToHexString(
-            HashAlgorithm.ComputeHash(SHA1.Create(), Encoding.UTF8.GetBytes(token))
-        );
+        string tokenHash;
+        using (SHA1 sha1 = SHA1.Create())
+        {
+            byte[] hashBytes = sha1.ComputeHash(Encoding.UTF8.GetBytes(token));
+            tokenHash = BitConverter.ToString(hashBytes).Replace("-", "").ToLowerInvariant();
+        }
 
         return $"SAPISIDHASH {timestamp}_{tokenHash}";
     }
@@ -174,7 +178,7 @@ internal class YoutubeHttpHandler : ClientDelegatingHandler
         return response;
     }
 
-    protected override async Task<HttpResponseMessage> SendAsync(
+    protected async UniTask<HttpResponseMessage> SendAsyncUni(
         HttpRequestMessage request,
         CancellationToken cancellationToken
     )
@@ -198,5 +202,13 @@ internal class YoutubeHttpHandler : ClientDelegatingHandler
 
             return response;
         }
+    }
+
+    protected override Task<HttpResponseMessage> SendAsync(
+        HttpRequestMessage request,
+        CancellationToken cancellationToken
+    )
+    {
+        return SendAsyncUni(request, cancellationToken).AsTask();
     }
 }

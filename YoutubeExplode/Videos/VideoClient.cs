@@ -2,6 +2,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using YoutubeExplode.Common;
 using YoutubeExplode.Exceptions;
 using YoutubeExplode.Videos.ClosedCaptions;
@@ -29,7 +30,7 @@ public class VideoClient(HttpClient http)
     /// <summary>
     /// Gets the metadata associated with the specified video.
     /// </summary>
-    public async ValueTask<Video> GetAsync(
+    public async UniTask<Video> GetAsync(
         VideoId videoId,
         CancellationToken cancellationToken = default
     )

@@ -2,7 +2,8 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
-using JsonExtensions.Reading;
+using Cysharp.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 using YoutubeExplode.Bridge;
 using YoutubeExplode.Exceptions;
 using YoutubeExplode.Utils;
@@ -15,7 +16,7 @@ internal class VideoController(HttpClient http)
 
     protected HttpClient Http { get; } = http;
 
-    private async ValueTask<string> ResolveVisitorDataAsync(
+    private async UniTask<string> ResolveVisitorDataAsync(
         CancellationToken cancellationToken = default
     )
     {
@@ -45,7 +46,7 @@ internal class VideoController(HttpClient http)
         var json = Json.Parse(jsonString);
 
         // This is just an ordered (but unstructured) blob of data
-        var value = json[0][2][0][0][13].GetStringOrNull();
+        var value = json?[0]?[2]?[0]?[0]?[13]?.Value<string>();
         if (string.IsNullOrWhiteSpace(value))
         {
             throw new YoutubeExplodeException("Failed to resolve visitor data.");
@@ -54,7 +55,7 @@ internal class VideoController(HttpClient http)
         return _visitorData = value;
     }
 
-    public async ValueTask<VideoWatchPage> GetVideoWatchPageAsync(
+    public async UniTask<VideoWatchPage> GetVideoWatchPageAsync(
         VideoId videoId,
         CancellationToken cancellationToken = default
     )
@@ -85,7 +86,7 @@ internal class VideoController(HttpClient http)
         }
     }
 
-    public async ValueTask<PlayerResponse> GetPlayerResponseAsync(
+    public async UniTask<PlayerResponse> GetPlayerResponseAsync(
         VideoId videoId,
         CancellationToken cancellationToken = default
     )
@@ -148,7 +149,7 @@ internal class VideoController(HttpClient http)
         return playerResponse;
     }
 
-    public async ValueTask<PlayerResponse> GetPlayerResponseAsync(
+    public async UniTask<PlayerResponse> GetPlayerResponseAsync(
         VideoId videoId,
         string? signatureTimestamp,
         CancellationToken cancellationToken = default

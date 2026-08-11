@@ -1,18 +1,17 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Text.Json;
-using JsonExtensions.Reading;
 using Lazy;
+using Newtonsoft.Json.Linq;
 using PowerKit.Extensions;
 using YoutubeExplode.Utils;
 
 namespace YoutubeExplode.Bridge;
 
-internal partial class PlaylistNextResponse(JsonElement content) : IPlaylistData
+internal partial class PlaylistNextResponse(JToken content) : IPlaylistData
 {
     [Lazy]
-    private JsonElement? ContentRoot =>
+    private JToken? ContentRoot =>
         content
             .GetPropertyOrNull("contents")
             ?.GetPropertyOrNull("twoColumnWatchNextResults")

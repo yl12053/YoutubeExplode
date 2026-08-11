@@ -2,6 +2,7 @@ using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using YoutubeExplode.Bridge;
 using YoutubeExplode.Exceptions;
 
@@ -9,7 +10,7 @@ namespace YoutubeExplode.Videos.Streams;
 
 internal class StreamController(HttpClient http) : VideoController(http)
 {
-    public async ValueTask<PlayerSource> GetPlayerSourceAsync(
+    public async UniTask<PlayerSource> GetPlayerSourceAsync(
         CancellationToken cancellationToken = default
     )
     {
@@ -30,7 +31,7 @@ internal class StreamController(HttpClient http) : VideoController(http)
         );
     }
 
-    public async ValueTask<DashManifest> GetDashManifestAsync(
+    public async UniTask<DashManifest> GetDashManifestAsync(
         string url,
         CancellationToken cancellationToken = default
     ) => DashManifest.Parse(await Http.GetStringAsync(url, cancellationToken));

@@ -1,6 +1,7 @@
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using PowerKit.Extensions;
 using YoutubeExplode.Bridge;
 using YoutubeExplode.Utils;
@@ -9,7 +10,7 @@ namespace YoutubeExplode.Videos.ClosedCaptions;
 
 internal class ClosedCaptionController(HttpClient http) : VideoController(http)
 {
-    public async ValueTask<ClosedCaptionTrackResponse> GetClosedCaptionTrackResponseAsync(
+    public async UniTask<ClosedCaptionTrackResponse> GetClosedCaptionTrackResponseAsync(
         string url,
         CancellationToken cancellationToken = default
     )

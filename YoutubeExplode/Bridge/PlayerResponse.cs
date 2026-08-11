@@ -3,19 +3,18 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
-using System.Text.Json;
 using System.Text.RegularExpressions;
-using JsonExtensions.Reading;
 using Lazy;
+using Newtonsoft.Json.Linq;
 using PowerKit.Extensions;
 using YoutubeExplode.Utils;
 
 namespace YoutubeExplode.Bridge;
 
-internal partial class PlayerResponse(JsonElement content)
+internal partial class PlayerResponse(JToken content)
 {
     [Lazy]
-    private JsonElement? Playability => content.GetPropertyOrNull("playabilityStatus");
+    private JToken? Playability => content.GetPropertyOrNull("playabilityStatus");
 
     [Lazy]
     private string? PlayabilityStatus =>
@@ -34,7 +33,7 @@ internal partial class PlayerResponse(JsonElement content)
         string.Equals(PlayabilityStatus, "ok", StringComparison.OrdinalIgnoreCase);
 
     [Lazy]
-    private JsonElement? Details => content.GetPropertyOrNull("videoDetails");
+    private JToken? Details => content.GetPropertyOrNull("videoDetails");
 
     [Lazy]
     public string? Title => Details?.GetPropertyOrNull("title")?.GetStringOrNull();
@@ -122,7 +121,7 @@ internal partial class PlayerResponse(JsonElement content)
             .NullIfWhiteSpace();
 
     [Lazy]
-    private JsonElement? StreamingData => content.GetPropertyOrNull("streamingData");
+    private JToken? StreamingData => content.GetPropertyOrNull("streamingData");
 
     [Lazy]
     public string? DashManifestUrl =>
@@ -173,7 +172,7 @@ internal partial class PlayerResponse(JsonElement content)
 
 internal partial class PlayerResponse
 {
-    public class ClosedCaptionTrackData(JsonElement content)
+    public class ClosedCaptionTrackData(JToken content)
     {
         [Lazy]
         public string? Url => content.GetPropertyOrNull("baseUrl")?.GetStringOrNull();
@@ -204,7 +203,7 @@ internal partial class PlayerResponse
 
 internal partial class PlayerResponse
 {
-    public class StreamData(JsonElement content) : IStreamData
+    public class StreamData(JToken content) : IStreamData
     {
         [Lazy]
         public int? Itag => content.GetPropertyOrNull("itag")?.GetInt32OrNull();

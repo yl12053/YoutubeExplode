@@ -1,6 +1,7 @@
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using YoutubeExplode.Bridge;
 using YoutubeExplode.Utils;
 
@@ -8,7 +9,7 @@ namespace YoutubeExplode.Search;
 
 internal class SearchController(HttpClient http)
 {
-    public async ValueTask<SearchResponse> GetSearchResponseAsync(
+    public async UniTask<SearchResponse> GetSearchResponseAsync(
         string searchQuery,
         SearchFilter searchFilter,
         string? continuationToken,

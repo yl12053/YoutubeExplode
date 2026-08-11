@@ -7,6 +7,8 @@ using System.Net.Http;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
+using Cysharp.Threading.Tasks.Linq;
 using PowerKit.Extensions;
 using YoutubeExplode.Bridge;
 using YoutubeExplode.Bridge.Cipher;
@@ -28,7 +30,7 @@ public class StreamClient(HttpClient http)
     // for the entire lifetime of the client.
     private CipherManifest? _cipherManifest;
 
-    private async ValueTask<CipherManifest> ResolveCipherManifestAsync(
+    private async UniTask<CipherManifest> ResolveCipherManifestAsync(
         CancellationToken cancellationToken
     )
     {
@@ -42,7 +44,7 @@ public class StreamClient(HttpClient http)
             ?? throw new YoutubeExplodeException("Failed to extract the cipher manifest.");
     }
 
-    private async ValueTask<long?> TryGetContentLengthAsync(
+    private async UniTask<long?> TryGetContentLengthAsync(
         IStreamData streamData,
         string url,
         CancellationToken cancellationToken = default
@@ -85,125 +87,128 @@ public class StreamClient(HttpClient http)
         return contentLength;
     }
 
-    private async IAsyncEnumerable<IStreamInfo> GetStreamInfosAsync(
+    private IUniTaskAsyncEnumerable<IStreamInfo> GetStreamInfosAsync(
         IEnumerable<IStreamData> streamDatas,
-        [EnumeratorCancellation] CancellationToken cancellationToken = default
+        CancellationToken cancellationToken1 = default
     )
     {
-        foreach (var streamData in streamDatas)
+        return UniTaskAsyncEnumerable.Create<IStreamInfo>(async (writer, cancellationToken) =>
         {
-            var itag =
-                streamData.Itag
-                ?? throw new YoutubeExplodeException("Failed to extract the stream itag.");
-
-            var url =
-                streamData.Url
-                ?? throw new YoutubeExplodeException("Failed to extract the stream URL.");
-
-            // Handle cipher-protected streams
-            if (!string.IsNullOrWhiteSpace(streamData.Signature))
+            foreach (var streamData in streamDatas)
             {
-                var cipherManifest = await ResolveCipherManifestAsync(cancellationToken);
+                var itag =
+                    streamData.Itag
+                    ?? throw new YoutubeExplodeException("Failed to extract the stream itag.");
 
-                url = UrlEx.SetQueryParameter(
-                    url,
-                    streamData.SignatureParameter ?? "sig",
-                    cipherManifest.Decipher(streamData.Signature)
-                );
-            }
+                var url =
+                    streamData.Url
+                    ?? throw new YoutubeExplodeException("Failed to extract the stream URL.");
 
-            var contentLength = await TryGetContentLengthAsync(streamData, url, cancellationToken);
-            if (contentLength is null)
-                continue;
-
-            var container =
-                streamData.Container?.Pipe(s => new Container(s))
-                ?? throw new YoutubeExplodeException("Failed to extract the stream container.");
-
-            var bitrate =
-                streamData.Bitrate?.Pipe(s => new Bitrate(s))
-                ?? throw new YoutubeExplodeException("Failed to extract the stream bitrate.");
-
-            var audioLanguage = !string.IsNullOrWhiteSpace(streamData.AudioLanguageCode)
-                ? new Language(
-                    streamData.AudioLanguageCode,
-                    streamData.AudioLanguageName ?? streamData.AudioLanguageCode
-                )
-                : (Language?)null;
-
-            // Muxed or video-only stream
-            if (!string.IsNullOrWhiteSpace(streamData.VideoCodec))
-            {
-                var framerate = streamData.VideoFramerate ?? 24;
-
-                var videoQuality = !string.IsNullOrWhiteSpace(streamData.VideoQualityLabel)
-                    ? VideoQuality.FromLabel(streamData.VideoQualityLabel, framerate)
-                    : VideoQuality.FromItag(itag, framerate);
-
-                var videoResolution =
-                    streamData.VideoWidth is not null && streamData.VideoHeight is not null
-                        ? new Resolution(streamData.VideoWidth.Value, streamData.VideoHeight.Value)
-                        : videoQuality.GetDefaultVideoResolution();
-
-                // Muxed
-                if (!string.IsNullOrWhiteSpace(streamData.AudioCodec))
+                // Handle cipher-protected streams
+                if (!string.IsNullOrWhiteSpace(streamData.Signature))
                 {
-                    var streamInfo = new MuxedStreamInfo(
+                    var cipherManifest = await ResolveCipherManifestAsync(cancellationToken);
+
+                    url = UrlEx.SetQueryParameter(
+                        url,
+                        streamData.SignatureParameter ?? "sig",
+                        cipherManifest.Decipher(streamData.Signature)
+                    );
+                }
+
+                var contentLength = await TryGetContentLengthAsync(streamData, url, cancellationToken);
+                if (contentLength is null)
+                    continue;
+
+                var container =
+                    streamData.Container?.Pipe(s => new Container(s))
+                    ?? throw new YoutubeExplodeException("Failed to extract the stream container.");
+
+                var bitrate =
+                    streamData.Bitrate?.Pipe(s => new Bitrate(s))
+                    ?? throw new YoutubeExplodeException("Failed to extract the stream bitrate.");
+
+                var audioLanguage = !string.IsNullOrWhiteSpace(streamData.AudioLanguageCode)
+                    ? new Language(
+                        streamData.AudioLanguageCode,
+                        streamData.AudioLanguageName ?? streamData.AudioLanguageCode
+                    )
+                    : (Language?)null;
+
+                // Muxed or video-only stream
+                if (!string.IsNullOrWhiteSpace(streamData.VideoCodec))
+                {
+                    var framerate = streamData.VideoFramerate ?? 24;
+
+                    var videoQuality = !string.IsNullOrWhiteSpace(streamData.VideoQualityLabel)
+                        ? VideoQuality.FromLabel(streamData.VideoQualityLabel, framerate)
+                        : VideoQuality.FromItag(itag, framerate);
+
+                    var videoResolution =
+                        streamData.VideoWidth is not null && streamData.VideoHeight is not null
+                            ? new Resolution(streamData.VideoWidth.Value, streamData.VideoHeight.Value)
+                            : videoQuality.GetDefaultVideoResolution();
+
+                    // Muxed
+                    if (!string.IsNullOrWhiteSpace(streamData.AudioCodec))
+                    {
+                        var streamInfo = new MuxedStreamInfo(
+                            url,
+                            container,
+                            new FileSize(contentLength.Value),
+                            bitrate,
+                            streamData.AudioCodec,
+                            audioLanguage,
+                            streamData.IsAudioLanguageDefault,
+                            streamData.VideoCodec,
+                            videoQuality,
+                            videoResolution,
+                            streamData.IsVideoUpscaled
+                        );
+
+                        await writer.YieldAsync(streamInfo);
+                    }
+                    // Video-only
+                    else
+                    {
+                        var streamInfo = new VideoOnlyStreamInfo(
+                            url,
+                            container,
+                            new FileSize(contentLength.Value),
+                            bitrate,
+                            streamData.VideoCodec,
+                            videoQuality,
+                            videoResolution,
+                            streamData.IsVideoUpscaled
+                        );
+
+                        await writer.YieldAsync(streamInfo);
+                    }
+                }
+                // Audio-only
+                else if (!string.IsNullOrWhiteSpace(streamData.AudioCodec))
+                {
+                    var streamInfo = new AudioOnlyStreamInfo(
                         url,
                         container,
                         new FileSize(contentLength.Value),
                         bitrate,
                         streamData.AudioCodec,
                         audioLanguage,
-                        streamData.IsAudioLanguageDefault,
-                        streamData.VideoCodec,
-                        videoQuality,
-                        videoResolution,
-                        streamData.IsVideoUpscaled
+                        streamData.IsAudioLanguageDefault
                     );
 
-                    yield return streamInfo;
+                    await writer.YieldAsync(streamInfo);
                 }
-                // Video-only
                 else
                 {
-                    var streamInfo = new VideoOnlyStreamInfo(
-                        url,
-                        container,
-                        new FileSize(contentLength.Value),
-                        bitrate,
-                        streamData.VideoCodec,
-                        videoQuality,
-                        videoResolution,
-                        streamData.IsVideoUpscaled
-                    );
-
-                    yield return streamInfo;
+                    throw new YoutubeExplodeException("Failed to extract the stream codec.");
                 }
             }
-            // Audio-only
-            else if (!string.IsNullOrWhiteSpace(streamData.AudioCodec))
-            {
-                var streamInfo = new AudioOnlyStreamInfo(
-                    url,
-                    container,
-                    new FileSize(contentLength.Value),
-                    bitrate,
-                    streamData.AudioCodec,
-                    audioLanguage,
-                    streamData.IsAudioLanguageDefault
-                );
-
-                yield return streamInfo;
-            }
-            else
-            {
-                throw new YoutubeExplodeException("Failed to extract the stream codec.");
-            }
-        }
+        });
     }
 
-    private async ValueTask<IReadOnlyList<IStreamInfo>> GetStreamInfosAsync(
+    private async UniTask<IReadOnlyList<IStreamInfo>> GetStreamInfosAsync(
         VideoId videoId,
         PlayerResponse playerResponse,
         CancellationToken cancellationToken = default
@@ -261,7 +266,7 @@ public class StreamClient(HttpClient http)
         return streamInfos;
     }
 
-    private async ValueTask<IReadOnlyList<IStreamInfo>> GetStreamInfosAsync(
+    private async UniTask<IReadOnlyList<IStreamInfo>> GetStreamInfosAsync(
         VideoId videoId,
         CancellationToken cancellationToken = default
     )
@@ -297,7 +302,7 @@ public class StreamClient(HttpClient http)
     /// <summary>
     /// Gets the manifest that lists available streams for the specified video.
     /// </summary>
-    public async ValueTask<StreamManifest> GetManifestAsync(
+    public async UniTask<StreamManifest> GetManifestAsync(
         VideoId videoId,
         CancellationToken cancellationToken = default
     )
@@ -317,7 +322,7 @@ public class StreamClient(HttpClient http)
     /// <summary>
     /// Gets the HTTP Live Stream (HLS) manifest URL for the specified video (if it is a livestream).
     /// </summary>
-    public async ValueTask<string> GetHttpLiveStreamUrlAsync(
+    public async UniTask<string> GetHttpLiveStreamUrlAsync(
         VideoId videoId,
         CancellationToken cancellationToken = default
     )
@@ -343,7 +348,7 @@ public class StreamClient(HttpClient http)
     /// <summary>
     /// Gets the stream identified by the specified metadata.
     /// </summary>
-    public async ValueTask<Stream> GetAsync(
+    public async UniTask<Stream> GetAsync(
         IStreamInfo streamInfo,
         CancellationToken cancellationToken = default
     )
@@ -357,7 +362,7 @@ public class StreamClient(HttpClient http)
     /// <summary>
     /// Copies the stream identified by the specified metadata to the specified stream.
     /// </summary>
-    public async ValueTask CopyToAsync(
+    public async Task CopyToAsync(
         IStreamInfo streamInfo,
         Stream destination,
         IProgress<double>? progress = null,
@@ -371,7 +376,7 @@ public class StreamClient(HttpClient http)
     /// <summary>
     /// Downloads the stream identified by the specified metadata to the specified file.
     /// </summary>
-    public async ValueTask DownloadAsync(
+    public async Task DownloadAsync(
         IStreamInfo streamInfo,
         string filePath,
         IProgress<double>? progress = null,

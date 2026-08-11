@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using PowerKit.Extensions;
 using YoutubeExplode.Bridge;
 using YoutubeExplode.Common;
@@ -52,7 +53,7 @@ public class ChannelClient(HttpClient http)
     /// <summary>
     /// Gets the metadata associated with the specified channel.
     /// </summary>
-    public async ValueTask<Channel> GetAsync(
+    public async UniTask<Channel> GetAsync(
         ChannelId channelId,
         CancellationToken cancellationToken = default
     )
@@ -78,7 +79,7 @@ public class ChannelClient(HttpClient http)
     /// <summary>
     /// Gets the metadata associated with the channel of the specified user.
     /// </summary>
-    public async ValueTask<Channel> GetByUserAsync(
+    public async UniTask<Channel> GetByUserAsync(
         UserName userName,
         CancellationToken cancellationToken = default
     ) => Get(await _controller.GetChannelPageAsync(userName, cancellationToken));
@@ -86,7 +87,7 @@ public class ChannelClient(HttpClient http)
     /// <summary>
     /// Gets the metadata associated with the channel identified by the specified slug or legacy custom URL.
     /// </summary>
-    public async ValueTask<Channel> GetBySlugAsync(
+    public async UniTask<Channel> GetBySlugAsync(
         ChannelSlug channelSlug,
         CancellationToken cancellationToken = default
     ) => Get(await _controller.GetChannelPageAsync(channelSlug, cancellationToken));
@@ -94,7 +95,7 @@ public class ChannelClient(HttpClient http)
     /// <summary>
     /// Gets the metadata associated with the channel identified by the specified handle or custom URL.
     /// </summary>
-    public async ValueTask<Channel> GetByHandleAsync(
+    public async UniTask<Channel> GetByHandleAsync(
         ChannelHandle channelHandle,
         CancellationToken cancellationToken = default
     ) => Get(await _controller.GetChannelPageAsync(channelHandle, cancellationToken));
@@ -103,7 +104,7 @@ public class ChannelClient(HttpClient http)
     /// Enumerates videos uploaded by the specified channel.
     /// </summary>
     // TODO: should return <IVideo> sequence instead (breaking change)
-    public IAsyncEnumerable<PlaylistVideo> GetUploadsAsync(
+    public IUniTaskAsyncEnumerable<PlaylistVideo> GetUploadsAsync(
         ChannelId channelId,
         CancellationToken cancellationToken = default
     )

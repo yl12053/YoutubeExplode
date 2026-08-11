@@ -1,32 +1,31 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Text.Json;
-using JsonExtensions.Reading;
 using Lazy;
+using Newtonsoft.Json.Linq;
 using PowerKit.Extensions;
 using YoutubeExplode.Utils;
 
 namespace YoutubeExplode.Bridge;
 
-internal partial class PlaylistBrowseResponse(JsonElement content) : IPlaylistData
+internal partial class PlaylistBrowseResponse(JToken content) : IPlaylistData
 {
     [Lazy]
-    private JsonElement? Sidebar =>
+    private JToken? Sidebar =>
         content
             .GetPropertyOrNull("sidebar")
             ?.GetPropertyOrNull("playlistSidebarRenderer")
             ?.GetPropertyOrNull("items");
 
     [Lazy]
-    private JsonElement? SidebarPrimary =>
+    private JToken? SidebarPrimary =>
         Sidebar
             ?.EnumerateArrayOrNull()
             ?.ElementAtOrNull(0)
             ?.GetPropertyOrNull("playlistSidebarPrimaryInfoRenderer");
 
     [Lazy]
-    private JsonElement? SidebarSecondary =>
+    private JToken? SidebarSecondary =>
         Sidebar
             ?.EnumerateArrayOrNull()
             ?.ElementAtOrNull(1)
@@ -57,7 +56,7 @@ internal partial class PlaylistBrowseResponse(JsonElement content) : IPlaylistDa
             ?.GetStringOrNull();
 
     [Lazy]
-    private JsonElement? AuthorDetails =>
+    private JToken? AuthorDetails =>
         SidebarSecondary?.GetPropertyOrNull("videoOwner")?.GetPropertyOrNull("videoOwnerRenderer");
 
     [Lazy]

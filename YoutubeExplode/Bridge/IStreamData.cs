@@ -1,6 +1,6 @@
 namespace YoutubeExplode.Bridge;
 
-internal interface IStreamData
+public interface IStreamData
 {
     int? Itag { get; }
 

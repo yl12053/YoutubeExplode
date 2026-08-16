@@ -8,7 +8,7 @@ using YoutubeExplode.Bridge.Cipher;
 
 namespace YoutubeExplode.Bridge;
 
-internal partial class PlayerSource(string content)
+public partial class PlayerSource(string content)
 {
     [Lazy]
     public CipherManifest? CipherManifest
@@ -133,7 +133,7 @@ internal partial class PlayerSource(string content)
     }
 }
 
-internal partial class PlayerSource
+public partial class PlayerSource
 {
     public static PlayerSource Parse(string raw) => new(raw);
 }

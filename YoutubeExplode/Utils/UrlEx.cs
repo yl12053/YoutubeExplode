@@ -7,7 +7,7 @@ using PowerKit.Extensions;
 
 namespace YoutubeExplode.Utils;
 
-internal static class UrlEx
+public static class UrlEx
 {
     private static IEnumerable<KeyValuePair<string, string>> EnumerateQueryParameters(string url)
     {

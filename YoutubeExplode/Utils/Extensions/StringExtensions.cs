@@ -3,7 +3,7 @@ using System.Text;
 
 namespace YoutubeExplode.Utils.Extensions;
 
-internal static class StringExtensions
+public static class StringExtensions
 {
     extension(string str)
     {

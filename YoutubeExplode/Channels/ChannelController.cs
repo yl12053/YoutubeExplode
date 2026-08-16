@@ -7,7 +7,7 @@ using YoutubeExplode.Exceptions;
 
 namespace YoutubeExplode.Channels;
 
-internal class ChannelController(HttpClient http)
+public class ChannelController(HttpClient http)
 {
     private async UniTask<ChannelPage> GetChannelPageAsync(
         string channelRoute,

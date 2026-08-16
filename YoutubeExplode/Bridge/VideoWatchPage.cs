@@ -12,7 +12,7 @@ using YoutubeExplode.Utils.Extensions;
 
 namespace YoutubeExplode.Bridge;
 
-internal partial class VideoWatchPage(IHtmlDocument content)
+public partial class VideoWatchPage(IHtmlDocument content)
 {
     [Lazy]
     public bool IsAvailable => content.QuerySelector("meta[property=\"og:url\"]") is not null;
@@ -117,7 +117,7 @@ internal partial class VideoWatchPage(IHtmlDocument content)
             ?.Pipe(j => new PlayerResponse(j));
 }
 
-internal partial class VideoWatchPage
+public partial class VideoWatchPage
 {
     public static VideoWatchPage? TryParse(string raw)
     {

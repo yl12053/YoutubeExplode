@@ -8,7 +8,7 @@ using YoutubeExplode.Utils;
 
 namespace YoutubeExplode.Bridge;
 
-internal partial class PlaylistBrowseResponse(JToken content) : IPlaylistData
+public partial class PlaylistBrowseResponse(JToken content) : IPlaylistData
 {
     [Lazy]
     private JToken? Sidebar =>
@@ -145,7 +145,7 @@ internal partial class PlaylistBrowseResponse(JToken content) : IPlaylistData
         ?? [];
 }
 
-internal partial class PlaylistBrowseResponse
+public partial class PlaylistBrowseResponse
 {
     public static PlaylistBrowseResponse Parse(string raw) => new(Json.Parse(raw));
 }

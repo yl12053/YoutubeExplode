@@ -11,7 +11,7 @@ using YoutubeExplode.Utils;
 
 namespace YoutubeExplode.Bridge;
 
-internal partial class PlayerResponse(JToken content)
+public partial class PlayerResponse(JToken content)
 {
     [Lazy]
     private JToken? Playability => content.GetPropertyOrNull("playabilityStatus");
@@ -170,7 +170,7 @@ internal partial class PlayerResponse(JToken content)
         ?? [];
 }
 
-internal partial class PlayerResponse
+public partial class PlayerResponse
 {
     public class ClosedCaptionTrackData(JToken content)
     {
@@ -201,7 +201,7 @@ internal partial class PlayerResponse
     }
 }
 
-internal partial class PlayerResponse
+public partial class PlayerResponse
 {
     public class StreamData(JToken content) : IStreamData
     {
@@ -320,7 +320,7 @@ internal partial class PlayerResponse
     }
 }
 
-internal partial class PlayerResponse
+public partial class PlayerResponse
 {
     public static PlayerResponse Parse(string raw) => new(Json.Parse(raw));
 }

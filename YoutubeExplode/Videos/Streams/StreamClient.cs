@@ -24,13 +24,13 @@ namespace YoutubeExplode.Videos.Streams;
 /// </summary>
 public class StreamClient(HttpClient http)
 {
-    private readonly StreamController _controller = new(http);
+    public readonly StreamController _controller = new(http);
 
     // Because we determine the player version ourselves, it's safe to cache the cipher manifest
     // for the entire lifetime of the client.
     private CipherManifest? _cipherManifest;
 
-    private async UniTask<CipherManifest> ResolveCipherManifestAsync(
+    public async UniTask<CipherManifest> ResolveCipherManifestAsync(
         CancellationToken cancellationToken
     )
     {
@@ -208,7 +208,7 @@ public class StreamClient(HttpClient http)
         });
     }
 
-    private async UniTask<IReadOnlyList<IStreamInfo>> GetStreamInfosAsync(
+    public async UniTask<IReadOnlyList<IStreamInfo>> GetStreamInfosAsync(
         VideoId videoId,
         PlayerResponse playerResponse,
         CancellationToken cancellationToken = default

@@ -15,7 +15,7 @@ using YoutubeExplode.Utils;
 
 namespace YoutubeExplode;
 
-internal class YoutubeHttpHandler : ClientDelegatingHandler
+public class YoutubeHttpHandler : ClientDelegatingHandler
 {
     private readonly CookieContainer _cookieContainer = new();
 

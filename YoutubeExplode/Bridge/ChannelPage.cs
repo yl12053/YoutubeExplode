@@ -6,7 +6,7 @@ using YoutubeExplode.Utils;
 
 namespace YoutubeExplode.Bridge;
 
-internal partial class ChannelPage(IHtmlDocument content)
+public partial class ChannelPage(IHtmlDocument content)
 {
     [Lazy]
     public string? Url =>
@@ -24,7 +24,7 @@ internal partial class ChannelPage(IHtmlDocument content)
         content.QuerySelector("meta[property=\"og:image\"]")?.GetAttribute("content");
 }
 
-internal partial class ChannelPage
+public partial class ChannelPage
 {
     public static ChannelPage? TryParse(string raw)
     {

@@ -10,7 +10,7 @@ using YoutubeExplode.Utils;
 namespace YoutubeExplode.Videos.Streams;
 
 // Works around YouTube's rate throttling, provides seeking support, and some resiliency
-internal partial class MediaStream(HttpClient http, IStreamInfo streamInfo) : Stream
+public partial class MediaStream(HttpClient http, IStreamInfo streamInfo) : Stream
 {
     // For most streams, YouTube limits transfer speed to match the video playback rate.
     // This helps them avoid unnecessary bandwidth, but for us it's a hindrance because
@@ -157,7 +157,7 @@ internal partial class MediaStream(HttpClient http, IStreamInfo streamInfo) : St
     }
 }
 
-internal partial class MediaStream
+public partial class MediaStream
 {
     public static string GetSegmentUrl(string streamUrl, long from, long to) =>
         UrlEx.SetQueryParameter(streamUrl, "range", $"{from}-{to}");

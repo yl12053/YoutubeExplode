@@ -3,7 +3,7 @@ using AngleSharp.Html.Parser;
 
 namespace YoutubeExplode.Utils;
 
-internal static class Html
+public static class Html
 {
     // A new HtmlParser instance must be created for each call to avoid thread safety issues
     // when multiple YoutubeClient instances are used concurrently. HtmlParser is not thread-safe

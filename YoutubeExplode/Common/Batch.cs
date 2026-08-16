@@ -16,13 +16,13 @@ public class Batch<T>(IReadOnlyList<T> items)
     public IReadOnlyList<T> Items { get; } = items;
 }
 
-internal static class Batch
+public static class Batch
 {
     public static Batch<T> Create<T>(IReadOnlyList<T> items)
         where T : IBatchItem => new(items);
 }
 
-internal static class BatchExtensions
+public static class BatchExtensions
 {
     extension<T>(IUniTaskAsyncEnumerable<Batch<T>> source)
         where T : IBatchItem

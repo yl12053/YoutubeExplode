@@ -2,7 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace YoutubeExplode.Bridge.Cipher;
 
-internal class SpliceCipherOperation(int index) : ICipherOperation
+public class SpliceCipherOperation(int index) : ICipherOperation
 {
     public string Decipher(string input) => input[index..];
 

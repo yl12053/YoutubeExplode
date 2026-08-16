@@ -5,7 +5,7 @@ using Newtonsoft.Json.Linq;
 
 namespace YoutubeExplode.Utils;
 
-internal static class Json
+public static class Json
 {
     public static string Extract(string source)
     {

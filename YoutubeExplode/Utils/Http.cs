@@ -3,7 +3,7 @@ using System.Net.Http;
 
 namespace YoutubeExplode.Utils;
 
-internal static class Http
+public static class Http
 {
     private static readonly Lazy<HttpClient> HttpClientLazy = new(() => new HttpClient());
 

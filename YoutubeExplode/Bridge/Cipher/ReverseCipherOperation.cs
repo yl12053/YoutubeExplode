@@ -3,7 +3,7 @@ using PowerKit.Extensions;
 
 namespace YoutubeExplode.Bridge.Cipher;
 
-internal class ReverseCipherOperation : ICipherOperation
+public class ReverseCipherOperation : ICipherOperation
 {
     public string Decipher(string input) => input.Reverse();
 

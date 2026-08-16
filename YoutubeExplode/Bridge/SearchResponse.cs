@@ -11,7 +11,7 @@ using YoutubeExplode.Utils.Extensions;
 
 namespace YoutubeExplode.Bridge;
 
-internal partial class SearchResponse(JToken content)
+public partial class SearchResponse(JToken content)
 {
     // Search response is incredibly inconsistent (with at least 5 variations),
     // so we employ descendant searching, which is inefficient but resilient.
@@ -58,9 +58,9 @@ internal partial class SearchResponse(JToken content)
             ?.GetStringOrNull();
 }
 
-internal partial class SearchResponse
+public partial class SearchResponse
 {
-    internal class VideoData(JToken content)
+    public class VideoData(JToken content)
     {
         [Lazy]
         public string? Id => content.GetPropertyOrNull("videoId")?.GetStringOrNull();
@@ -153,7 +153,7 @@ internal partial class SearchResponse
     }
 }
 
-internal partial class SearchResponse
+public partial class SearchResponse
 {
     public class PlaylistData(JToken content)
     {
@@ -239,7 +239,7 @@ internal partial class SearchResponse
     }
 }
 
-internal partial class SearchResponse
+public partial class SearchResponse
 {
     public class ChannelData(JToken content)
     {
@@ -269,7 +269,7 @@ internal partial class SearchResponse
     }
 }
 
-internal partial class SearchResponse
+public partial class SearchResponse
 {
     public static SearchResponse Parse(string raw) => new(Json.Parse(raw));
 }

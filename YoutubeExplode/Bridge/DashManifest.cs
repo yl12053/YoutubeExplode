@@ -10,7 +10,7 @@ using YoutubeExplode.Utils;
 
 namespace YoutubeExplode.Bridge;
 
-internal partial class DashManifest(XElement content)
+public partial class DashManifest(XElement content)
 {
     [Lazy]
     public IReadOnlyList<IStreamData> Streams =>
@@ -33,7 +33,7 @@ internal partial class DashManifest(XElement content)
             .ToArray();
 }
 
-internal partial class DashManifest
+public partial class DashManifest
 {
     public class StreamData(XElement content) : IStreamData
     {
@@ -95,7 +95,7 @@ internal partial class DashManifest
     }
 }
 
-internal partial class DashManifest
+public partial class DashManifest
 {
     public static DashManifest Parse(string raw) => new(Xml.Parse(raw));
 }

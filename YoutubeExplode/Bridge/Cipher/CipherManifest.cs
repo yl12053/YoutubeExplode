@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace YoutubeExplode.Bridge.Cipher;
 
-internal class CipherManifest(string signatureTimestamp, IReadOnlyList<ICipherOperation> operations)
+public class CipherManifest(string signatureTimestamp, IReadOnlyList<ICipherOperation> operations)
 {
     public string SignatureTimestamp { get; } = signatureTimestamp;
 

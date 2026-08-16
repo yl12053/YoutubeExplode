@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace YoutubeExplode.Bridge;
 
-internal interface IPlaylistData
+public interface IPlaylistData
 {
     string? Title { get; }
 

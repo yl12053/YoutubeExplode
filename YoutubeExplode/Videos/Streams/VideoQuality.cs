@@ -38,7 +38,7 @@ public readonly partial struct VideoQuality(string label, int maxHeight, int fra
     /// </summary>
     public bool IsHighDefinition => MaxHeight >= 1080;
 
-    internal Resolution GetDefaultVideoResolution() =>
+    public Resolution GetDefaultVideoResolution() =>
         MaxHeight switch
         {
             144 => new Resolution(256, 144),
@@ -72,7 +72,7 @@ public partial struct VideoQuality
         return $"{maxHeight}p{framerateRounded}";
     }
 
-    internal static VideoQuality FromLabel(string label, int framerateFallback)
+    public static VideoQuality FromLabel(string label, int framerateFallback)
     {
         // Video quality labels can have the following formats:
         // - 1080p (regular stream, regular fps)
@@ -93,7 +93,7 @@ public partial struct VideoQuality
         return new VideoQuality(label, maxHeight, framerate ?? framerateFallback);
     }
 
-    internal static VideoQuality FromItag(int itag, int framerate)
+    public static VideoQuality FromItag(int itag, int framerate)
     {
         var maxHeight = itag switch
         {

@@ -28,7 +28,7 @@ public partial class Thumbnail(string url, Resolution resolution)
 
 public partial class Thumbnail
 {
-    internal static IReadOnlyList<Thumbnail> GetDefaultSet(VideoId videoId) =>
+    public static IReadOnlyList<Thumbnail> GetDefaultSet(VideoId videoId) =>
         [
             new($"https://img.youtube.com/vi/{videoId}/default.jpg", new Resolution(120, 90)),
             new($"https://img.youtube.com/vi/{videoId}/mqdefault.jpg", new Resolution(320, 180)),

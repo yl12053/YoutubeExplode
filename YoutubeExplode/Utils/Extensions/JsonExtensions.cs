@@ -3,7 +3,7 @@ using Newtonsoft.Json.Linq;
 
 namespace YoutubeExplode.Utils.Extensions;
 
-internal static class JsonExtensions
+public static class JsonExtensions
 {
     extension(JToken token)
     {

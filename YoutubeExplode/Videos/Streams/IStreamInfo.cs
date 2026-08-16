@@ -46,7 +46,7 @@ public static class StreamInfoExtensions
     /// <inheritdoc cref="StreamInfoExtensions" />
     extension(IStreamInfo streamInfo)
     {
-        internal bool IsThrottled() =>
+        public bool IsThrottled() =>
             !string.Equals(
                 UrlEx.TryGetQueryParameterValue(streamInfo.Url, "ratebypass"),
                 "yes",

@@ -1,6 +1,6 @@
 namespace YoutubeExplode.Bridge.Cipher;
 
-internal interface ICipherOperation
+public interface ICipherOperation
 {
     string Decipher(string input);
 }

@@ -8,7 +8,7 @@ using PowerKit.Extensions;
 
 namespace YoutubeExplode.Bridge;
 
-internal class PlaylistVideoData(JToken content)
+public class PlaylistVideoData(JToken content)
 {
     [Lazy]
     public int? Index =>

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace YoutubeExplode.Utils;
 
-internal static class Protobuf
+public static class Protobuf
 {
     private static bool IsLenField(ulong tag) => (tag & 0x7) == 2;
 

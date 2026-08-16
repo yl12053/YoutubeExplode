@@ -10,7 +10,7 @@ using YoutubeExplode.Videos;
 
 namespace YoutubeExplode.Playlists;
 
-internal class PlaylistController(HttpClient http)
+public class PlaylistController(HttpClient http)
 {
     // Works only with user-made playlists
     public async UniTask<PlaylistBrowseResponse> GetPlaylistBrowseResponseAsync(

@@ -8,7 +8,7 @@ using YoutubeExplode.Utils;
 
 namespace YoutubeExplode.Videos.ClosedCaptions;
 
-internal class ClosedCaptionController(HttpClient http) : VideoController(http)
+public class ClosedCaptionController(HttpClient http) : VideoController(http)
 {
     public async UniTask<ClosedCaptionTrackResponse> GetClosedCaptionTrackResponseAsync(
         string url,

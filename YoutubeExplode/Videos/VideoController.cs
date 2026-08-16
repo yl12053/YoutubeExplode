@@ -4,13 +4,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using Newtonsoft.Json.Linq;
+using UnityEngine;
 using YoutubeExplode.Bridge;
 using YoutubeExplode.Exceptions;
 using YoutubeExplode.Utils;
 
 namespace YoutubeExplode.Videos;
 
-internal class VideoController(HttpClient http)
+public class VideoController(HttpClient http)
 {
     private string? _visitorData;
 
@@ -88,7 +89,9 @@ internal class VideoController(HttpClient http)
 
     public async UniTask<PlayerResponse> GetPlayerResponseAsync(
         VideoId videoId,
-        CancellationToken cancellationToken = default
+        CancellationToken cancellationToken = default,
+        bool doIgnoreUnavailable = false,
+        bool doDebug = false
     )
     {
         var visitorData = await ResolveVisitorDataAsync(cancellationToken);
@@ -139,11 +142,14 @@ internal class VideoController(HttpClient http)
         using var response = await Http.SendAsync(request, cancellationToken);
         response.EnsureSuccessStatusCode();
 
+        var result = await response.Content.ReadAsStringAsync(cancellationToken);
+        if (doDebug) Debug.Log(result);
+        
         var playerResponse = PlayerResponse.Parse(
             await response.Content.ReadAsStringAsync(cancellationToken)
         );
 
-        if (!playerResponse.IsAvailable)
+        if (!playerResponse.IsAvailable && !doIgnoreUnavailable)
             throw new VideoUnavailableException($"Video '{videoId}' is not available.");
 
         return playerResponse;

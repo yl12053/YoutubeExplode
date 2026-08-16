@@ -8,14 +8,14 @@ using YoutubeExplode.Utils;
 
 namespace YoutubeExplode.Bridge;
 
-internal partial class ClosedCaptionTrackResponse(XElement content)
+public partial class ClosedCaptionTrackResponse(XElement content)
 {
     [Lazy]
     public IReadOnlyList<CaptionData> Captions =>
         content.Descendants("p").Select(x => new CaptionData(x)).ToArray();
 }
 
-internal partial class ClosedCaptionTrackResponse
+public partial class ClosedCaptionTrackResponse
 {
     public class CaptionData(XElement content)
     {
@@ -36,7 +36,7 @@ internal partial class ClosedCaptionTrackResponse
     }
 }
 
-internal partial class ClosedCaptionTrackResponse
+public partial class ClosedCaptionTrackResponse
 {
     public class PartData(XElement content)
     {
@@ -51,7 +51,7 @@ internal partial class ClosedCaptionTrackResponse
     }
 }
 
-internal partial class ClosedCaptionTrackResponse
+public partial class ClosedCaptionTrackResponse
 {
     public static ClosedCaptionTrackResponse Parse(string raw) => new(Xml.Parse(raw));
 }

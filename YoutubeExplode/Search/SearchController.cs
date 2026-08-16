@@ -7,7 +7,7 @@ using YoutubeExplode.Utils;
 
 namespace YoutubeExplode.Search;
 
-internal class SearchController(HttpClient http)
+public class SearchController(HttpClient http)
 {
     public async UniTask<SearchResponse> GetSearchResponseAsync(
         string searchQuery,
